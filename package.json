@@ -1,0 +1,24 @@
+{
+  "name": "git-task-runner",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Anton Sivolapov <anton.sivolapov@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^3.0.0",
+    "gulp": "^3.9.0",
+    "gulp-jshint": "^1.11.0",
+    "gulp-mocha": "^2.1.2",
+    "gulp-notify": "^2.2.0",
+    "map-stream": "0.0.6",
+    "mocha": "^2.2.5"
+  },
+  "dependencies": {
+    "lodash": "^3.9.3",
+    "q": "^1.4.1"
+  }
+}

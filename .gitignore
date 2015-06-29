@@ -1,0 +1,18 @@
+#IDE, sass and livereload temporary files
+.idea
+.sass-cache
+sass/compass
+node_modules
+bower_components
+build
+tmp
+tmp/**
+doc
+
+Thumbs.db
+.diff
+#vim files
+*~
+*.swp
+*.swo
+.vimrc
