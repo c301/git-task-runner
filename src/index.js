@@ -7,7 +7,7 @@ var gitRunner = {
         return u.validateOptions(options)
             .then(function() {
                 //get initial branch. Back to this branch on finish
-                return u.getRepo()
+                return u.getRepo(options.pathToRepo)
                 .then(function(repo) {
                     return repo.getCurrentBranch().then(function( initialBranch ) {
                         return u.getRawConfig(options.config)
