@@ -3,6 +3,8 @@ var notify = require("gulp-notify");
 var jshint = require('gulp-jshint');
 var map = require('map-stream');
 var mocha = require('gulp-mocha');
+var watch = require('gulp-watch');
+var plumber = require('gulp-plumber');
 
 gulp.task('lint', function() {
     var notyReporter = map(function (file, cb) {
@@ -28,20 +30,15 @@ gulp.task('test', function() {
     function handleError(err) {
         gulp.src("./src/index.js")
         .pipe(notify(err.message));
-        this.emit('end');
     }
     return gulp.src('test/index.test.js')
-    .pipe(mocha({reporter: 'nyan'}))
-    .on("error", handleError);
+    .pipe(plumber({
+        errorHandler: handleError
+    }))
+    .pipe(mocha());
 });
 
-gulp.task('noty', function() {
-    return gulp.src("./src/index.js")
-    .pipe(notify("Hello Gulp!"));
-});
 
 gulp.task('default', ['lint', 'test'], function() {
-  gulp.watch(['src/*.js', 'test/*.js'], function() {
-    gulp.run('lint', 'test');
-  });
+    gulp.watch(['src/*.js', 'test/*.js'], ['lint', 'test']);
 });
