@@ -79,7 +79,10 @@ describe('Index', function() {
     });
 
     it.only('Run with test config', function(done) {
-        options.config = '../test/testing.config';
+        var options = {
+            config: '../test/testing.config',
+            pathToRepo: '../../test-repo'
+        };
         gitRunner.run(options).then(function(result) {
             done();
         });

@@ -159,7 +159,7 @@ var U = {
     },
     validateOptions: function(options) {
         var d = Q.defer();
-        if( !options.config ){
+        if( !options.config || !options.pathToRepo){
             d.reject();
         }else{
             d.resolve();

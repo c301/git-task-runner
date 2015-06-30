@@ -23,6 +23,8 @@ var gitRunner = {
                         });
                     });
                 });
+            }, function() {
+                console.log( 'Validation failed. Please provide valid config' );
             })
             .catch(function(e) {
                 console.log( e.stack );
