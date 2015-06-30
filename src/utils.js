@@ -52,7 +52,10 @@ var getRepo = ( function () {
         }else{
             var finalPath = pathToRepo ? path.join( __dirname, path.normalize(pathToRepo) ) : ".";
             console.log( 'open new repo', finalPath );
-            return openRepo( finalPath );
+            return openRepo( finalPath ).then(function(openedRepo) {
+                repo = openedRepo;
+                return repo;
+            });
         }
         return d.promise;
     };
