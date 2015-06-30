@@ -47,9 +47,11 @@ var getRepo = ( function () {
     return function(pathToRepo) {
         var d = Q.defer();
         if(repo){
+            console.log( 'repo already opened' );
             d.resolve(repo);
         }else{
             var finalPath = pathToRepo ? path.join( __dirname, path.normalize(pathToRepo) ) : ".";
+            console.log( 'open new repo', finalPath );
             return openRepo( finalPath );
         }
         return d.promise;
@@ -71,6 +73,7 @@ var dropCommentedLines = function( lines ) {
 };
 var U = {
     getRepo: getRepo,
+    checkoutToBranch: checkoutToBranch,
     validateURL: function(textval) {
         var urlregex = new RegExp(
             "^(http|https|ftp)\://([a-zA-Z0-9\.\-]+(\:[a-zA-Z0-9\.&amp;%\$\-]+)*@)*((25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])|([a-zA-Z0-9\-]+\.)*[a-zA-Z0-9\-]+\.(com|edu|gov|int|mil|net|org|biz|arpa|info|name|pro|aero|coop|museum|[a-zA-Z]{2}))(\:[0-9]+)*(/($|[a-zA-Z0-9\.\,\?\'\\\+&amp;%\$#\=~_\-]+))*$");
