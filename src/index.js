@@ -18,7 +18,7 @@ var gitRunner = {
                         })
                         .catch(function(e) {
                             console.log( e.stack );
-                            console.log( 'Error. Return to initial branch %s', initialBranch.name() );
+                            console.log( 'Return to initial branch %s. Due to errors.', initialBranch.name() );
                             return u.checkoutToBranch( initialBranch );
                         });
                     });

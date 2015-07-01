@@ -3,6 +3,8 @@ var http = require('https');
 var fs = require('fs');
 var path = require('path');
 var _ = require('lodash');
+var spawn = require('child_process').spawn;
+var colors = require('colors');
 
 var NodeGit = require("nodegit");
 
@@ -12,7 +14,82 @@ var Signature = NodeGit.Signature;
 var Checkout = NodeGit.Checkout;
 var CheckoutOptions = NodeGit.CheckoutOptions;
 
+var CommandParser = (function() {
+    var parse = function(str, lookForQuotes) {
+        var args = [];
+        var readingPart = false;
+        var part = '';
+        for(var i=0; i<str.length; i++){
+            if(str.charAt(i) === ' ' && !readingPart) {
+                args.push(part);
+                part = '';
+            } else {
+                if(str.charAt(i) === '\"' && lookForQuotes) {
+                    part += str.charAt(i);
+                    readingPart = !readingPart;
+                } else {
+                    part += str.charAt(i);
+                }
+            }
+        }
+        args.push(part);
+        return args.filter(function(el) {
+            return el.trim() !== "";
+        });
+    };
+    return {
+        parse: parse
+    };
+})(); 
+
 console.dir = _.partialRight(console.dir, { showHidden: true, depth: null });
+
+var execCommand = function(commandText, row) {
+    return getRepo().then(function(repo) {
+        var d = Q.defer();
+        if( row.comment ){
+            console.log( colors.green('Comment: %s'), colors.gray(row.comment) );
+        }
+        //set cwd (repo root), etc..
+        var options = {
+            cwd: repo.workdir()
+        };
+
+        //parse command line
+        var parsedCommand = CommandParser.parse(commandText, true);
+        //get command
+        var command = _.first(parsedCommand);
+        //get args
+        var args = _.rest(parsedCommand);
+        console.log( colors.green('Executing: %s %s'), colors.gray(command), colors.gray(args.join(" ")) );
+        console.log();
+
+        var commandProcess  = spawn( command, args, options );
+        commandProcess.stdout.on('data', function (data) {
+            process.stdout.write(data);
+        });
+        commandProcess.stderr.on('data', function (data) {
+            process.stdout.write(colors.red(data));
+        });
+        /*
+         * commandProcess.on('exit', function (code) {
+         *     console.log( colors.green('Finished: %s %s'), colors.gray(command), colors.gray(args.join(" ")) );
+         *     d.resolve();
+         * });
+         */
+        commandProcess.on('close', function (code) {
+            console.log( colors.green('Finished: %s %s'), colors.gray(command), colors.gray(args.join(" ")) );
+            d.resolve();
+        });
+        commandProcess.on('error', function (error) {
+            console.log(colors.red('ERROR:'));
+            console.dir( error );
+            d.reject();
+        });
+
+        return d.promise;
+    });
+};
 
 var seq = function( functions ) {
     var d = Q();
@@ -47,11 +124,9 @@ var getRepo = ( function () {
     return function(pathToRepo) {
         var d = Q.defer();
         if(repo){
-            console.log( 'repo already opened' );
             d.resolve(repo);
         }else{
             var finalPath = pathToRepo ? path.join( __dirname, path.normalize(pathToRepo) ) : ".";
-            console.log( 'open new repo', finalPath );
             return openRepo( finalPath ).then(function(openedRepo) {
                 repo = openedRepo;
                 return repo;
@@ -97,7 +172,7 @@ var U = {
                     });
 
                 }).on('error', function(e) {
-                    console.log("Got error on AJAX request: " + e.message);
+                    console.log(colors.red("Got error on AJAX request: " + e.message));
                     d.resolve();
                 });
             }else{
@@ -118,24 +193,36 @@ var U = {
         return d.promise;
     },
     handleRow: function(row) {
-        console.log( 'handle row', row );
+        console.log( colors.green('Handle row: %s'), colors.yellow(row.__originalRow ));
         if(row.tag){
             return checkoutToTag( row.tag ).then( function() {
-                return compileVersion( row.version );
+                return execCommand( row.command, row );
+            }, function(e) {
+                console.log( colors.yellow('Checkout failed. Skip row. %s'), colors.red(e) );
+                return true;
             });
         }else if(row.branch){
             return checkoutToBranch( row.branch ).then( function() {
-                return compileVersion( row.version );
+                return execCommand( row.command, row );
+            }, function(e) {
+                console.log( colors.yellow('Checkout failed. Skip row. %s'), colors.red(e) );
+                return true;
             });
         }else{
-            return checkoutToBranch( BASE_BRANCH ).then( function() {
-                return compileVersion( row.version );
-            });
+            console.log( colors.yellow('No tag/branch to checkout. Please check config.') );
+            return true;
         }
     },
     handleRows: function(config) {
         var rowHandlers = _.map(config, function( row ) {
-            return _.partial( U.handleRow, row );
+            return function() {
+                var t = _.partial( U.handleRow, row );
+                
+                return Q.when(t()).tap(function() {
+                    //empty line between res
+                    console.log();
+                });
+            };
         });
         return seq(rowHandlers);
     },
@@ -155,6 +242,7 @@ var U = {
                 }
             });
             if(Object.keys(row).length){
+                row.__originalRow = line;
                 jsonConfig.push(row);
             }
         });
