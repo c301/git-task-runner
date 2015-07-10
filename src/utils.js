@@ -126,7 +126,7 @@ var getRepo = ( function () {
         if(repo){
             d.resolve(repo);
         }else{
-            var finalPath = pathToRepo ? path.join( __dirname, path.normalize(pathToRepo) ) : ".";
+            var finalPath = path.resolve( process.cwd(), pathToRepo );
             return openRepo( finalPath ).then(function(openedRepo) {
                 repo = openedRepo;
                 return repo;
@@ -177,7 +177,7 @@ var U = {
                 });
             }else{
                 //try to get file from filesytem
-                var realPath = path.join( __dirname, path.normalize(configPath) );
+                var realPath = path.resolve( process.cwd(), configPath );
                 fs.readFile(realPath, { encoding: 'utf8' }, function (err, data) {
                     if (err){
                         console.log( err );
