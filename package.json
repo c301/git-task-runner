@@ -1,12 +1,13 @@
 {
   "name": "git-task-runner",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Anton Sivolapov <anton.sivolapov@gmail.com>",
+  "repository": "https://github.com/c301/git-task-runner.git",
   "license": "ISC",
   "devDependencies": {
     "chai": "^3.0.0",
