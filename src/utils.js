@@ -61,7 +61,7 @@ var execCommand = function(commandText, row) {
         var command = _.first(parsedCommand);
         //get args
         var args = _.rest(parsedCommand);
-        console.log( colors.green('Executing: %s %s'), colors.gray(command), colors.gray(args.join(" ")) );
+        console.log( colors.green('Executing: %s with arguments %s.'), colors.gray(command), colors.gray(args.join(" ")) );
         console.log();
 
         var commandProcess  = spawn( command, args, options );
@@ -236,7 +236,7 @@ var U = {
             var keyValuesPairs = line.split(';');
             keyValuesPairs.forEach(function (keyValue) {
                 var key = keyValue.split(':')[0];
-                var value = keyValue.split(':')[1];
+                var value = _.rest(keyValue.split(':')).join(':');
                 if( key && value ){
                     row[key.trim()] = value.trim();
                 }

@@ -22,9 +22,6 @@ if( typeof argv.c === 'string' && typeof argv.r === 'string' ){
         config: path.resolve(process.cwd(), argv.c),
         pathToRepo: path.resolve(process.cwd(), argv.r)
     };
-    console.log( options );
-    console.log( path.resolve(process.cwd(), options.config) );
-    console.log( process.cwd() );
 
     gitRunner.run(options).then(function(result) {
         done();

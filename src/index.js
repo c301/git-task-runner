@@ -12,6 +12,7 @@ var gitRunner = {
                     return repo.getCurrentBranch().then(function( initialBranch ) {
                         return u.getRawConfig(options.config)
                         .then(u.parseConfig)
+                        .tap(console.log)
                         .then(u.handleRows)
                         .then(function() {
                             return u.checkoutToBranch( initialBranch );
