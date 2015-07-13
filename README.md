@@ -8,6 +8,7 @@ release specific feature to the same client.
 
 Here is how we can solve the problem with `git-task-runner`.
 
+### CLI example
 - install package `npm install -g git-task-runner`
 - create file with configuration 
 ```
@@ -16,6 +17,19 @@ command: grunt release:client2;    branch:feature2;          comment: Client2 sh
 command: grunt release:client3 release:client4;    branch:master;          comment: Other clients should reseive latest code from master
 ```
 - run tasks `git-task-runner -c path/to/config -r path/to/repo`
+
+### JS example
+```
+    var gitRunner = require( 'git-task-runner' );
+
+    var options = {
+        config: 'https://raw.githubusercontent.com/c301/git-task-runner/master/test/empty.config', //path to config can be an URL
+        pathToRepo: '../test-repo'
+    };
+    gitRunner.run(options).then(function(result) {
+        //tasks executed
+    });
+```
 
 Configuration file
 ==================

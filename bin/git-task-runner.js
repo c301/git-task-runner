@@ -19,7 +19,7 @@ var argv = require('yargs')
 
 if( typeof argv.c === 'string' && typeof argv.r === 'string' ){
     var options = {
-        config: path.resolve(process.cwd(), argv.c),
+        config: argv.c,
         pathToRepo: path.resolve(process.cwd(), argv.r)
     };
 

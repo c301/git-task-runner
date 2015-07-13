@@ -1,6 +1,6 @@
 {
   "name": "git-task-runner",
-  "version": "0.1.4",
+  "version": "0.1.8",
   "description": "Run command on specified tag/branch according to configuration file.",
   "main": "index.js",
   "scripts": {
@@ -18,10 +18,6 @@
     "map-stream": "0.0.6",
     "mocha": "^2.2.5"
   },
-  "files": [
-      "bin",
-      "src"
-  ],
   "dependencies": {
     "colors": "^1.1.2",
     "lodash": "^3.9.3",
