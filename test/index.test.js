@@ -3,10 +3,10 @@ var gitRunner = require( '../src/index' );
 var gUtils = require( '../src/utils' );
 
 describe('Index', function() {
-    this.timeout(50000);
+    this.timeout(5000);
 
     var options = {
-        config: '../test/empty.config'
+        config: 'test/empty.config'
     };
 
     it('Should be true', function() {
@@ -66,7 +66,7 @@ describe('Index', function() {
     });
 
     it('getRepo', function(done) {
-        var pathToRepo = "../../test-repo";
+        var pathToRepo = "../test-repo";
         gUtils.getRepo(pathToRepo).then(function(repo) {
             return repo.getCurrentBranch().then(function(branch) {
                 done();
@@ -78,10 +78,10 @@ describe('Index', function() {
         gitRunner.run(options).then(done);
     });
 
-    it.only('Run with test config', function(done) {
+    it('Run with test config', function(done) {
         var options = {
-            config: '../test/testing.config',
-            pathToRepo: '../../test-repo'
+            config: 'test/testing.config',
+            pathToRepo: '../test-repo'
         };
         gitRunner.run(options).then(function(result) {
             done();
