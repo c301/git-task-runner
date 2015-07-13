@@ -1,5 +1,5 @@
 var Q = require('q');
-var http = require('https');
+var http = require('request');
 var fs = require('fs');
 var path = require('path');
 var _ = require('lodash');
@@ -162,7 +162,11 @@ var U = {
         if(configPath){
             if( U.validateURL(configPath) ){
                 //prepare request to get file content
-                http.get(configPath, function(res) {
+                http.get(configPath).on('error', function(e) {
+                    console.log(colors.red("Got error on AJAX request: " + e.message));
+                    d.resolve();
+                })
+                .on('response', function(res) {
                     var body = '';
                     res.on('data', function(chunk) {
                         body += chunk;
@@ -170,10 +174,6 @@ var U = {
                     res.on('end', function() {
                         d.resolve(body.trim());
                     });
-
-                }).on('error', function(e) {
-                    console.log(colors.red("Got error on AJAX request: " + e.message));
-                    d.resolve();
                 });
             }else{
                 //try to get file from filesytem

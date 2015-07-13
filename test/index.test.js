@@ -23,8 +23,20 @@ describe('Index', function() {
             done('Error while getting raw config text');
         });
     });
-    it('Get raw config text from URL', function(done) {
+    it('Get raw config text from URL (HTTPS)', function(done) {
         options.config = 'https://raw.githubusercontent.com/c301/git-task-runner/master/test/empty.config';
+        gUtils.getRawConfig(options.config).then(function(text) {
+            if( text === 'empty config' ){
+                done();
+            }else{
+                done('Wrong content in config file', text);
+            }
+        },function(message) {
+            done('Error while getting raw config text');
+        });
+    });
+    it('Get raw config text from URL (HTTP)', function(done) {
+        options.config = 'http://raw.githubusercontent.com/c301/git-task-runner/master/test/empty.config';
         gUtils.getRawConfig(options.config).then(function(text) {
             if( text === 'empty config' ){
                 done();
