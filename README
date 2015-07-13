@@ -1,1 +1,17 @@
-h1. CWD for each command is folder of the repository
+Execute command on specific point of the repo (branch/tag).
+CWD for each command is folder of the repository
+
+Usage
+``
+
+Example of the config
+```
+command: cat echo.file;    branch:tmp-branch1;          comment: release latest code from master for all versions, except versions listed below
+command: cat echo.file;    branch:tmp-branch1;          comment: release latest code from master for all versions, except versions listed below
+command: cat echo.file;                                 comment: testing fix
+command: cat echo.file;    tag:v5.7;                    comment: we want to always release outdated version
+command: cat echo.file;    branch:tmp-branch2;          comment: testing
+command: cat echo.file;    branch:tmp-branch2;          comment: testing
+command: cat echo.file;    branch:tmp-branch2;          comment: testing
+```
+
