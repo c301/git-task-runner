@@ -53,12 +53,22 @@ command to execute. **Required**.
 
 Example of the config
 ```
+
 command: cat echo.file;    branch:tmp-branch1;          comment: release latest code from master for all versions, except versions listed below
-command: cat echo.file;    branch:tmp-branch1;          comment: release latest code from master for all versions, except versions listed below
-#command: cat echo.file;                                comment: commented task
+command: cat echo.file;                                 comment: empty branch name, default branch name should be passed
+# command: cat echo.file;                                comment: commented task
 command: cat echo.file;    tag:v5.7;                    comment: we want to always release outdated version
 command: cat echo.file;    branch:tmp-branch2;          comment: testing
 command: cat echo.file;    branch:tmp-branch2;          comment: testing
 command: cat echo.file;    branch:tmp-branch2;          comment: testing
 ```
 
+Options 
+=======
+To check CLI usage try `git-task-runner -h`
+### config ( in CLI mode `-c` )
+**required**. Path to configuration file (related to current CWD)
+### pathToRepo ( in CLI mode `-r` )
+**required**. Path to repo (related to current CWD)
+### defaultBranchName ( in CLI mode `-b` )
+**optional**. Default branch name. Will be used, if branch name ommited in config file.

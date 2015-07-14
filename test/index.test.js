@@ -90,10 +90,11 @@ describe('Index', function() {
         gitRunner.run(options).then(done);
     });
 
-    it('Run with test config', function(done) {
+    it.only('Run with test config', function(done) {
         var options = {
             config: 'test/testing.config',
-            pathToRepo: '../test-repo'
+            pathToRepo: '../test-repo',
+            defaultBranchName: 'tmp-branch1'
         };
         gitRunner.run(options).then(function(result) {
             done();

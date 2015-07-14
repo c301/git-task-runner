@@ -44,6 +44,13 @@ var CommandParser = (function() {
 
 console.dir = _.partialRight(console.dir, { showHidden: true, depth: null });
 
+var validRow = function(row) {
+    if( !row.command ){
+        console.log( colors.yellow('Command is required.') );
+        return false;
+    }
+    return true;
+};
 var execCommand = function(commandText, row) {
     return getRepo().then(function(repo) {
         var d = Q.defer();
@@ -192,8 +199,13 @@ var U = {
         }
         return d.promise;
     },
-    handleRow: function(row) {
+    handleRow: function(row, options) {
         console.log( colors.green('Handle row: %s'), colors.yellow(row.__originalRow ));
+        var branch = row.branch || options.defaultBranchName;
+        if( !validRow(row) ){
+            console.log( colors.red('Skip invalid row.') );
+            return true;
+        }
         if(row.tag){
             return checkoutToTag( row.tag ).then( function() {
                 return execCommand( row.command, row );
@@ -201,22 +213,22 @@ var U = {
                 console.log( colors.yellow('Checkout failed. Skip row. %s'), colors.red(e) );
                 return true;
             });
-        }else if(row.branch){
-            return checkoutToBranch( row.branch ).then( function() {
+        }else if(branch){
+            return checkoutToBranch( branch ).then( function() {
                 return execCommand( row.command, row );
             }, function(e) {
                 console.log( colors.yellow('Checkout failed. Skip row. %s'), colors.red(e) );
                 return true;
             });
         }else{
-            console.log( colors.yellow('No tag/branch to checkout. Please check config.') );
+            console.log( colors.yellow('No tag/branch to checkout. Please check config ( you can provide default branch name ).') );
             return true;
         }
     },
-    handleRows: function(config) {
+    handleRows: function(config, options) {
         var rowHandlers = _.map(config, function( row ) {
             return function() {
-                var t = _.partial( U.handleRow, row );
+                var t = _.partial( U.handleRow, row, options );
                 
                 return Q.when(t()).tap(function() {
                     //empty line between res
