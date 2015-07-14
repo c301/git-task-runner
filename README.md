@@ -71,4 +71,4 @@ To check CLI usage try `git-task-runner -h`
 ### pathToRepo ( in CLI mode `-r` )
 **required**. Path to repo (related to current CWD)
 ### defaultBranchName ( in CLI mode `-b` )
-**optional**. Default branch name. Will be used, if branch name ommited in config file.
+**optional**. Default branch name. Will be used, if branch name omitted in config file.
