@@ -1,6 +1,6 @@
 {
   "name": "git-task-runner",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "Run command on specified tag/branch according to configuration file.",
   "main": "index.js",
   "scripts": {
@@ -24,6 +24,7 @@
     "nodegit": "^0.4.1",
     "q": "^1.4.1",
     "request": "^2.58.0",
+    "win-spawn": "^2.0.0",
     "yargs": "^3.15.0"
   },
   "bin": {

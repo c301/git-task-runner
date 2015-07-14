@@ -3,7 +3,7 @@ var http = require('request');
 var fs = require('fs');
 var path = require('path');
 var _ = require('lodash');
-var spawn = require('child_process').spawn;
+var spawn = require('win-spawn');
 var colors = require('colors');
 
 var NodeGit = require("nodegit");
