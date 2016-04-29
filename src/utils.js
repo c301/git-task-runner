@@ -6,13 +6,16 @@ var _ = require('lodash');
 var spawn = require('win-spawn');
 var colors = require('colors');
 
-var NodeGit = require("nodegit");
+var git    = require('gitty');
+var Command    = git.Command;
 
-var openRepo = NodeGit.Repository.open;
-var Tag = NodeGit.Tag;
-var Signature = NodeGit.Signature;
-var Checkout = NodeGit.Checkout;
-var CheckoutOptions = NodeGit.CheckoutOptions;
+// var NodeGit = require("nodegit");
+
+// var openRepo = NodeGit.Repository.open;
+// var Tag = NodeGit.Tag;
+// var Signature = NodeGit.Signature;
+// var Checkout = NodeGit.Checkout;
+// var CheckoutOptions = NodeGit.CheckoutOptions;
 
 var CommandParser = (function() {
     var parse = function(str, lookForQuotes) {
@@ -59,7 +62,7 @@ var execCommand = function(commandText, row) {
         }
         //set cwd (repo root), etc..
         var options = {
-            cwd: repo.workdir()
+            cwd: repo.path
         };
 
         //parse command line
@@ -110,20 +113,21 @@ var seq = function( functions ) {
 
 var checkoutToTag = function( tagName ) {
     return getRepo().then(function(repo) {
-        return repo.getTagByName(tagName)
-        .then(function(tag) {
-            return Checkout.tree(tag.owner(), tag.id(), { checkoutStrategy: Checkout.STRATEGY.FORCE})
-                .then(function() {
-                    var signature = Signature.default(repo);
-                    var code = repo.setHeadDetached(tag.id(), signature, "Checkout: HEAD " + tag.id());
-                    if(!code){
-                        return code;
-                    }else{
-                        throw new Error('Error while moving to tag. Code: ' + code);
-                    }
-                });
-        });
+        var d = Q.defer();
+        repo.getTags(function(tags) {
+            repo.checkout(tagName, [], function() {
+                d.resolve();
+            });
+        })
+        return d.promise;
     });
+};
+
+var openRepo = function(path) {
+    var d = Q.defer();
+    var openedRepo = git(path);
+    d.resolve(openedRepo);
+    return d.promise;
 };
 
 var getRepo = ( function () {
@@ -133,6 +137,7 @@ var getRepo = ( function () {
         if(repo){
             d.resolve(repo);
         }else{
+
             var finalPath = path.resolve( process.cwd(), pathToRepo );
             return openRepo( finalPath ).then(function(openedRepo) {
                 repo = openedRepo;
@@ -143,11 +148,29 @@ var getRepo = ( function () {
     };
 } )();
 
+var getCurrentBranch = function() {
+    var d = Q.defer();
+    getRepo().then(function(repo) {
+        repo.getBranches(function(err, response) {
+            if (err) {
+                console.log('Error:', err);
+                d.reject(err);
+            }else{
+                d.resolve(response.current);
+            }
+        });
+    });
+
+    return d.promise;
+};
+
 var checkoutToBranch = function( branchName ) {
     return getRepo().then(function(repo) {
-        var checkoutOptions = new CheckoutOptions();
-        checkoutOptions.checkoutStrategy = Checkout.STRATEGY.FORCE;
-        return repo.checkoutBranch(branchName, checkoutOptions);
+        var d = Q.defer();
+        repo.checkout(branchName, [], function() {
+            d.resolve();
+        });
+        return d.promise;
     });
 };
 
@@ -159,6 +182,7 @@ var dropCommentedLines = function( lines ) {
 var U = {
     getRepo: getRepo,
     checkoutToBranch: checkoutToBranch,
+    getCurrentBranch: getCurrentBranch,
     validateURL: function(textval) {
         var urlregex = new RegExp(
             "^(http|https|ftp)\://([a-zA-Z0-9\.\-]+(\:[a-zA-Z0-9\.&amp;%\$\-]+)*@)*((25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])|([a-zA-Z0-9\-]+\.)*[a-zA-Z0-9\-]+\.(com|edu|gov|int|mil|net|org|biz|arpa|info|name|pro|aero|coop|museum|[a-zA-Z]{2}))(\:[0-9]+)*(/($|[a-zA-Z0-9\.\,\?\'\\\+&amp;%\$#\=~_\-]+))*$");
@@ -202,6 +226,7 @@ var U = {
     handleRow: function(row, options) {
         console.log( colors.green('Handle row: %s'), colors.yellow(row.__originalRow ));
         var branch = row.branch || options.defaultBranchName;
+
         if( !validRow(row) ){
             console.log( colors.red('Skip invalid row.') );
             return true;

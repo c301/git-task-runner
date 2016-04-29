@@ -77,6 +77,10 @@ describe('Index', function() {
         });
     });
 
+    it('Run with empty config', function(done) {
+        gitRunner.run(options).then(done);
+    });
+
     it('getRepo', function(done) {
         var pathToRepo = "../test-repo";
         gUtils.getRepo(pathToRepo).then(function(repo) {
@@ -86,15 +90,11 @@ describe('Index', function() {
         });
     });
 
-    it('Run with empty config', function(done) {
-        gitRunner.run(options).then(done);
-    });
-
-    it.only('Run with test config', function(done) {
+    it('Run with test config', function(done) {
         var options = {
             config: 'test/testing.config',
             pathToRepo: '../test-repo',
-            defaultBranchName: 'tmp-branch1'
+            defaultBranchName: 'master'
         };
         gitRunner.run(options).then(function(result) {
             done();

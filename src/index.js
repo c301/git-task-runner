@@ -9,7 +9,7 @@ var gitRunner = {
                 //get initial branch. Back to this branch on finish
                 return u.getRepo(options.pathToRepo)
                 .then(function(repo) {
-                    return repo.getCurrentBranch().then(function( initialBranch ) {
+                    return u.getCurrentBranch().then(function( initialBranch ) {
                         return u.getRawConfig(options.config)
                         .then(u.parseConfig)
                         .then(function(config) {
